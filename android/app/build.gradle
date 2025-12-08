@@ -1,48 +1,55 @@
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'com.google.gms.google-services'
+id 'com.android.application'
+id 'kotlin-android'
+id 'com.google.gms.google-services'
 }
+
 
 android {
-    namespace "com.example.tiktok_tutorial"
-    compileSdk 34
+namespace "com.example.tiktok_tutorial"
+compileSdk 34
 
-    defaultConfig {
-        applicationId "com.example.tiktok_tutorial"
-        minSdk 23
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-        multiDexEnabled true
-    }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
-        }
-    }
-
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+defaultConfig {
+applicationId "com.example.tiktok_tutorial"
+minSdk 23
+targetSdk 34
+versionCode 1
+versionName "1.0"
+multiDexEnabled true
 }
 
+
+buildTypes {
+release {
+minifyEnabled false
+shrinkResources false
+proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+'proguard-rules.pro'
+}
+}
+
+
+kotlinOptions {
+jvmTarget = '17'
+}
+
+
+compileOptions {
+sourceCompatibility JavaVersion.VERSION_17
+targetCompatibility JavaVersion.VERSION_17
+}
+
+
+packaging {
+resources {
+excludes += "/META-INF/{AL2.0,LGPL2.1}"
+}
+}
+}
+
+
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.20"
-    implementation 'com.android.support:multidex:1.0.3'
+implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.20"
+implementation 'androidx.multidex:multidex:2.0.1'
 }

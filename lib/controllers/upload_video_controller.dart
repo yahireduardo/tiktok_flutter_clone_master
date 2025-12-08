@@ -16,14 +16,20 @@ class UploadVideoController extends GetxController {
     return compressedVideo!.file;
   }
 
-  Future<String> _uploadVideoToStorage(String id, String videoPath) async {
-    Reference ref = firebaseStorage.ref().child('videos').child(id);
+Future<String> _uploadVideoToStorage(String id, String videoPath) async {
+  Reference ref = firebaseStorage.ref().child('videos').child(id);
 
-    UploadTask uploadTask = ref.putFile(await _compressVideo(videoPath));
-    TaskSnapshot snap = await uploadTask;
-    String downloadUrl = await snap.ref.getDownloadURL();
-    return downloadUrl;
+  final File? compressed = await _compressVideo(videoPath);
+
+  if (compressed == null) {
+    throw 'No se pudo comprimir el video';
   }
+
+  UploadTask uploadTask = ref.putFile(compressed);
+  TaskSnapshot snap = await uploadTask;
+  String downloadUrl = await snap.ref.getDownloadURL();
+  return downloadUrl;
+}
 
   Future<File> _getThumbnail(String videoPath) async {
     final thumbnail = await VideoCompress.getFileThumbnail(videoPath);
