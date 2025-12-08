@@ -1,0 +1,33 @@
+pluginManagement {
+    
+    def localProperties = new Properties()
+    def localPropertiesFile = new File(settings.rootDir, "local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.withReader("UTF-8") { reader ->
+            localProperties.load(reader)
+        }
+    }
+    
+    def flutterSdkPath = localProperties.getProperty('flutter.sdk')
+    if (flutterSdkPath != null) {
+        settings.ext.flutterSdkPath = flutterSdkPath
+        includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "tiktok_tutorial"
+include ':app'

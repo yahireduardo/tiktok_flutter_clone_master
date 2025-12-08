@@ -1,0 +1,47 @@
+name: tiktok_tutorial
+description: A new Flutter project.
+
+# La versión mínima de Dart debe ser actualizada para soportar el código actual
+# y los nuevos paquetes.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0" # 👈 ACTUALIZADO: Requerido por Flutter 3.x y Dart 3.x
+
+dependencies:
+  # --- ACTUALIZACIONES DE COMPATIBILIDAD ---
+
+  # Estaba en 3.2.0; se actualiza para solucionar errores de DecoderCallback/hashValues
+  cached_network_image: ^3.3.1
+
+  # Estaba en 3.1.6; se actualiza a versiones compatibles con Firebase 11/12/13
+  cloud_firestore: ^4.13.5
+  firebase_auth: ^4.15.5
+  firebase_core: ^2.24.2
+  firebase_storage: ^11.5.6
+
+  # Estaba en 4.6.1; se actualiza para corregir el error theme.backgroundColor
+  get: ^4.6.6 
+
+  # Estaba en 0.8.4; se actualiza a la versión moderna
+  image_picker: ^1.0.4
+
+  # --- DEPENDENCIAS SECUNDARIAS ---
+  cupertino_icons: ^1.0.6 # Actualizado ligeramente
+  timeago: ^3.5.0 # Actualizado ligeramente
+
+  # Paquetes de video compatibles con Flutter 3.x
+  video_compress: ^3.1.0
+  video_player: ^2.8.3
+
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  # Actualizado para seguir la convención moderna
+  flutter_lints: ^3.0.1
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
