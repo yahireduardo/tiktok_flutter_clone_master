@@ -4,31 +4,27 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"  # Actualizado para Flutter 3.35
+  sdk: ">=3.5.0 <4.0.0" # Actualizado para Flutter 3.35
 
 dependencies:
+  cached_network_image: ^3.3.1
+  cloud_firestore: ^5.4.0
+  cupertino_icons: ^1.0.8
+  firebase_auth: ^6.1.2
+  firebase_core: ^4.2.1
+  firebase_storage: ^12.2.0
   flutter:
     sdk: flutter
-
-  # Firebase - VERSIONES COMPATIBLES CON FLUTTER 3.35 Y DART 3.9
-  firebase_core: ^3.5.0
-  firebase_auth: ^5.3.0
-  cloud_firestore: ^5.4.0
-  firebase_storage: ^12.2.0
-
-  # Otros paquetes - VERSIONES ACTUALIZADAS
   get: ^4.6.6
-  cached_network_image: ^3.3.1
   image_picker: ^1.1.2
-  video_player: ^2.10.0
-  video_compress: ^3.1.0
   timeago: ^3.6.1
-  cupertino_icons: ^1.0.8
+  video_compress: ^3.1.0
+  video_player: ^2.10.0
 
 dev_dependencies:
+  flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
 
 flutter:
   uses-material-design: true
