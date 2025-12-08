@@ -3,10 +3,10 @@ buildscript {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.1'
-        classpath 'com.google.gms:google-services:4.4.1'
+        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath 'com.google.gms:google-services:4.4.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20"
     }
 }
 
@@ -17,13 +17,7 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
-
+rootProject.buildDir = "../build"
 subprojects {
-    project.evaluationDependsOn(':app')
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-
-tasks.register("clean", Delete) {
-    delete rootProject.layout.buildDirectory
 }

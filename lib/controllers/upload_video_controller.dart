@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -6,7 +8,7 @@ import 'package:tiktok_tutorial/models/video.dart';
 import 'package:video_compress/video_compress.dart';
 
 class UploadVideoController extends GetxController {
-  _compressVideo(String videoPath) async {
+  Future<File?>? _compressVideo(String videoPath) async {
     final compressedVideo = await VideoCompress.compressVideo(
       videoPath,
       quality: VideoQuality.MediumQuality,
@@ -23,7 +25,7 @@ class UploadVideoController extends GetxController {
     return downloadUrl;
   }
 
-  _getThumbnail(String videoPath) async {
+  Future<File> _getThumbnail(String videoPath) async {
     final thumbnail = await VideoCompress.getFileThumbnail(videoPath);
     return thumbnail;
   }
@@ -37,7 +39,7 @@ class UploadVideoController extends GetxController {
   }
 
   // upload video
-  uploadVideo(String songName, String caption, String videoPath) async {
+  Future<void> uploadVideo(String songName, String caption, String videoPath) async {
     try {
       String uid = firebaseAuth.currentUser!.uid;
       DocumentSnapshot userDoc =

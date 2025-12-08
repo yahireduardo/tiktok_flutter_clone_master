@@ -14,7 +14,7 @@ class AddVideoScreen extends StatefulWidget {
 
 class _AddVideoScreenState extends State<AddVideoScreen> {
   // 🚨 CORRECCIÓN 1: Eliminar BuildContext context como argumento
-  pickVideo(ImageSource src) async {
+  Future<void> pickVideo(ImageSource src) async {
     final video = await ImagePicker().pickVideo(source: src);
     
     // Si el State fue desmontado mientras se abría la cámara/galería, salimos.
@@ -33,7 +33,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     }
   }
 
-  showOptionsDialog(BuildContext context) {
+  Future showOptionsDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) => SimpleDialog(

@@ -8,12 +8,12 @@ class ProfileController extends GetxController {
 
   final Rx<String> _uid = "".obs;
 
-  updateUserId(String uid) {
+  void updateUserId(String uid) {
     _uid.value = uid;
     getUserData();
   }
 
-  getUserData() async {
+  Future<void> getUserData() async {
     List<String> thumbnails = [];
     var myVideos = await firestore
         .collection('videos')
@@ -76,7 +76,7 @@ class ProfileController extends GetxController {
     update();
   }
 
-  followUser() async {
+  Future<void> followUser() async {
     var doc = await firestore
         .collection('users')
         .doc(_uid.value)

@@ -8,7 +8,7 @@ class SearchController extends GetxController {
 
   List<User> get searchedUsers => _searchedUsers.value;
 
-  searchUser(String typedUser) async {
+  Future<void> searchUser(String typedUser) async {
     _searchedUsers.bindStream(firestore
         .collection('users')
         .where('name', isGreaterThanOrEqualTo: typedUser)

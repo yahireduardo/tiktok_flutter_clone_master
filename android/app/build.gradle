@@ -1,26 +1,16 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "com.google.gms.google-services"
-    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.gms.google-services'
 }
 
 android {
     namespace "com.example.tiktok_tutorial"
     compileSdk 34
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
     defaultConfig {
-        applicationId "com.example.tiktok_tutorial"  // <-- DEBE COINCIDIR CON google-services.json
-        minSdk flutter.minSdkVersion
+        applicationId "com.example.tiktok_tutorial"
+        minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -29,16 +19,30 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
 
-flutter {
-    source '../..'
-}
-
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:34.6.0')
-    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.20"
+    implementation 'com.android.support:multidex:1.0.3'
 }

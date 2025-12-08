@@ -9,12 +9,12 @@ class CommentController extends GetxController {
 
   String _postId = "";
 
-  updatePostId(String id) {
+  void updatePostId(String id) {
     _postId = id;
     getComment();
   }
 
-  getComment() async {
+  Future<void> getComment() async {
     _comments.bindStream(
       firestore
           .collection('videos')
@@ -33,7 +33,7 @@ class CommentController extends GetxController {
     );
   }
 
-  postComment(String commentText) async {
+  Future<void> postComment(String commentText) async {
     try {
       if (commentText.isNotEmpty) {
         DocumentSnapshot userDoc = await firestore
@@ -78,7 +78,7 @@ class CommentController extends GetxController {
     }
   }
 
-  likeComment(String id) async {
+  Future<void> likeComment(String id) async {
     var uid = authController.user.uid;
     DocumentSnapshot doc = await firestore
         .collection('videos')
