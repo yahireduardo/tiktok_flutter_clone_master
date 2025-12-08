@@ -33,11 +33,32 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMARE1EnfpaYz4osN4c4kicqSEtt6WZgA",
+      authDomain: "tiktok-f7ee4.firebaseapp.com",
+      projectId: "tiktok-f7ee4",
+      storageBucket: "tiktok-f7ee4.firebasestorage.app",
+      messagingSenderId: "535199382894",
+      appId: "1:535199382894:web:968e90799d93c2d8f5557f"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+  </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    var serviceWorkerVersion = null;
+    var serviceWorkerVersion = "{{flutter_service_worker_version}}";
     var scriptLoaded = false;
     function loadMainDartJs() {
       if (scriptLoaded) {
