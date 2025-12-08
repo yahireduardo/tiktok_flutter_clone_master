@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -48,7 +48,7 @@ android {
     defaultConfig {
         applicationId "com.example.tiktok_tutorial"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdk 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
