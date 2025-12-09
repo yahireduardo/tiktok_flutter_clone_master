@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/views/screens/auth/login_screen.dart';
 import 'package:tiktok_tutorial/views/widgets/text_input_field.dart';
@@ -38,12 +39,18 @@ class SignupScreen extends StatelessWidget {
             ),
             Stack(
               children: [
-                const CircleAvatar(
-                  radius: 64,
-                  backgroundImage: NetworkImage(
-                      'https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png'),
-                  backgroundColor: Colors.black,
-                ),
+                Obx(() {
+                  final profilePhoto = authController.profilePhoto;
+                  return CircleAvatar(
+                    radius: 64,
+                    backgroundImage: profilePhoto != null && profilePhoto.bytes != null
+                        ? MemoryImage(profilePhoto.bytes!)
+                        : const NetworkImage(
+                                'https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png')
+                            as ImageProvider,
+                    backgroundColor: Colors.black,
+                  );
+                }),
                 Positioned(
                   bottom: -10,
                   left: 80,

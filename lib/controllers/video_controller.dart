@@ -36,4 +36,25 @@ class VideoController extends GetxController {
       });
     }
   }
+
+  Future<void> deleteVideo(String videoId) async {
+    try {
+      // Eliminar el video de Firestore
+      await firestore.collection('videos').doc(videoId).delete();
+      
+      // Eliminar los comentarios del video
+      var comments = await firestore
+          .collection('comments')
+          .where('videoId', isEqualTo: videoId)
+          .get();
+      
+      for (var comment in comments.docs) {
+        await firestore.collection('comments').doc(comment.id).delete();
+      }
+      
+      Get.snackbar('Success', 'Video deleted successfully');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to delete video: ${e.toString()}');
+    }
+  }
 }

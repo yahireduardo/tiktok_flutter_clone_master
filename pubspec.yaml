@@ -19,8 +19,10 @@ dependencies:
   get: ^4.6.6
   image_picker: ^1.1.2
   timeago: ^3.6.1
-  video_compress: ^3.1.0
   video_player: ^2.10.0
+  cross_file: ^0.3.4+2
+  universal_html: ^2.2.4
+  flutter_image_compress: ^2.3.0
 
 dev_dependencies:
   flutter_test:

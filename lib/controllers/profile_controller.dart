@@ -7,26 +7,60 @@ class ProfileController extends GetxController {
   Map<String, dynamic> get user => _user.value;
 
   final Rx<String> _uid = "".obs;
+  final RxBool _isLoading = false.obs;
+  final RxString _error = "".obs;
+  
+  bool get isLoading => _isLoading.value;
+  String get error => _error.value;
 
   void updateUserId(String uid) {
+    print('ProfileController: updateUserId called with uid: $uid');
     _uid.value = uid;
+    _user.value = {}; // Reset user data
+    _error.value = ""; // Reset error
     getUserData();
   }
 
   Future<void> getUserData() async {
-    List<String> thumbnails = [];
-    var myVideos = await firestore
-        .collection('videos')
-        .where('uid', isEqualTo: _uid.value)
-        .get();
+    try {
+      _isLoading.value = true;
+      update();
+      
+      print('ProfileController: Getting user data for uid: ${_uid.value}');
+      
+      if (_uid.value.isEmpty) {
+        print('ProfileController: ERROR - UID is empty');
+        _isLoading.value = false;
+        _error.value = "User ID is empty";
+        update();
+        return;
+      }
+      
+      List<String> thumbnails = [];
+      var myVideos = await firestore
+          .collection('videos')
+          .where('uid', isEqualTo: _uid.value)
+          .get();
 
-    for (int i = 0; i < myVideos.docs.length; i++) {
-      thumbnails.add((myVideos.docs[i].data() as dynamic)['thumbnail']);
-    }
+      print('ProfileController: Found ${myVideos.docs.length} videos');
+      
+      for (int i = 0; i < myVideos.docs.length; i++) {
+        thumbnails.add((myVideos.docs[i].data() as dynamic)['thumbnail']);
+      }
 
-    DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(_uid.value).get();
-    final userData = userDoc.data()! as dynamic;
+      DocumentSnapshot userDoc =
+          await firestore.collection('users').doc(_uid.value).get();
+      
+      if (!userDoc.exists) {
+        print('ProfileController: ERROR - User document not found!');
+        _isLoading.value = false;
+        _error.value = "User not found in database";
+        update();
+        return;
+      }
+      
+      final userData = userDoc.data()! as dynamic;
+      print('ProfileController: User data retrieved successfully');
     String name = userData['name'];
     String profilePhoto = userData['profilePhoto'];
     int likes = 0;
@@ -73,7 +107,17 @@ class ProfileController extends GetxController {
       'name': name,
       'thumbnails': thumbnails,
     };
+    
+    _isLoading.value = false;
+    print('ProfileController: User profile data set successfully');
     update();
+    } catch (e, stackTrace) {
+      _isLoading.value = false;
+      _error.value = e.toString();
+      print('ProfileController: ERROR - $e');
+      print('Stack trace: $stackTrace');
+      update();
+    }
   }
 
   Future<void> followUser() async {

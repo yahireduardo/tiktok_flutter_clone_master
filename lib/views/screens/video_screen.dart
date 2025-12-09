@@ -12,31 +12,37 @@ class VideoScreen extends StatelessWidget {
 
   final VideoController videoController = Get.put(VideoController());
 
-  SizedBox buildProfile(String profilePhoto) {
-    return SizedBox(
-      width: 60,
-      height: 60,
-      child: Stack(children: [
-        Positioned(
-          left: 5,
-          child: Container(
-            width: 50,
-            height: 50,
-            padding: const EdgeInsets.all(1),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(25),
-              child: Image(
-                image: NetworkImage(profilePhoto),
-                fit: BoxFit.cover,
+  Widget buildProfile(String profilePhoto) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(23),
+        child: Image.network(
+          profilePhoto,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey[800],
+              child: const Icon(Icons.person, size: 25, color: Colors.white),
+            );
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: Colors.grey[800],
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               ),
-            ),
-          ),
-        )
-      ]),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -60,9 +66,12 @@ class VideoScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25)),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: Image(
-                  image: NetworkImage(profilePhoto),
+                child: Image.network(
+                  profilePhoto,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.music_note, size: 20);
+                  },
                 ),
               ))
         ],
@@ -101,6 +110,7 @@ class VideoScreen extends StatelessWidget {
                             child: Container(
                               padding: const EdgeInsets.only(
                                 left: 20,
+                                bottom: 20,
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -145,84 +155,111 @@ class VideoScreen extends StatelessWidget {
                             ),
                           ),
                           Container(
-                            width: 100,
-                            margin: EdgeInsets.only(top: size.height / 5),
+                            width: 70,
+                            margin: EdgeInsets.only(
+                              top: size.height / 3,
+                              bottom: 200,
+                            ),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 buildProfile(
                                   data.profilePhoto,
                                 ),
-                                Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () =>
-                                          videoController.likeVideo(data.id),
-                                      child: Icon(
-                                        Icons.favorite,
-                                        size: 40,
-                                        color: data.likes.contains(
-                                                authController.user.uid)
-                                            ? Colors.red
-                                            : Colors.white,
+                                const SizedBox(height: 4),
+                                // Botón de eliminar solo si es tu video
+                                if (data.uid == authController.user.uid) ...[
+                                  InkWell(
+                                    onTap: () {
+                                      Get.defaultDialog(
+                                        title: 'Delete Video',
+                                        middleText: 'Are you sure you want to delete this video?',
+                                        textConfirm: 'Delete',
+                                        textCancel: 'Cancel',
+                                        confirmTextColor: Colors.white,
+                                        onConfirm: () {
+                                          videoController.deleteVideo(data.id);
+                                          Get.back();
+                                        },
+                                      );
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      size: 26,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
+                                  const Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                ],
+                                InkWell(
+                                  onTap: () =>
+                                      videoController.likeVideo(data.id),
+                                  child: Icon(
+                                    Icons.favorite,
+                                    size: 28,
+                                    color: data.likes.contains(
+                                            authController.user.uid)
+                                        ? Colors.red
+                                        : Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                Text(
+                                  data.likes.length.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => CommentScreen(
+                                        id: data.id,
                                       ),
                                     ),
-                                    const SizedBox(height: 7),
-                                    Text(
-                                      data.likes.length.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.comment,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => CommentScreen(
-                                            id: data.id,
-                                          ),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.comment,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 7),
-                                    Text(
-                                      data.commentCount.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  ],
+                                const SizedBox(height: 1),
+                                Text(
+                                  data.commentCount.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {},
-                                      child: const Icon(
-                                        Icons.reply,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 7),
-                                    Text(
-                                      data.shareCount.toString(),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  ],
+                                const SizedBox(height: 4),
+                                InkWell(
+                                  onTap: () {},
+                                  child: const Icon(
+                                    Icons.reply,
+                                    size: 28,
+                                    color: Colors.white,
+                                  ),
                                 ),
+                                const SizedBox(height: 1),
+                                Text(
+                                  data.shareCount.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
                                 CircleAnimation(
                                   child: buildMusicAlbum(data.profilePhoto),
                                 ),

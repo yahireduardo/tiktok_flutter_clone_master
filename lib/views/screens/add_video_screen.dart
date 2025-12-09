@@ -1,9 +1,9 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/views/screens/confirm_screen.dart';
+import 'package:tiktok_tutorial/utils/file_picker_helper.dart';
 
 class AddVideoScreen extends StatefulWidget {
   const AddVideoScreen({super.key});
@@ -13,20 +13,16 @@ class AddVideoScreen extends StatefulWidget {
 }
 
 class _AddVideoScreenState extends State<AddVideoScreen> {
-  // 🚨 CORRECCIÓN 1: Eliminar BuildContext context como argumento
   Future<void> pickVideo(ImageSource src) async {
-    final video = await ImagePicker().pickVideo(source: src);
+    final video = await FilePickerHelper.pickVideo(src);
     
-    // Si el State fue desmontado mientras se abría la cámara/galería, salimos.
     if (!mounted) return; 
 
     if (video != null) {
-      // 🚨 CORRECCIÓN 2: Usar la propiedad 'context' del State
       Navigator.of(context).push( 
         MaterialPageRoute(
           builder: (context) => ConfirmScreen(
-            videoFile: File(video.path),
-            videoPath: video.path,
+            videoFile: video,
           ),
         ),
       );
@@ -40,8 +36,8 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
         children: [
           SimpleDialogOption(
             onPressed: () {
-              Navigator.of(context).pop(); // Cerrar el diálogo primero
-              pickVideo(ImageSource.gallery); // 🚨 CORRECCIÓN 3: No pasar context
+              Navigator.of(context).pop();
+              pickVideo(ImageSource.gallery);
             },
             child: const Row(
               children: [
@@ -56,24 +52,25 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
               ],
             ),
           ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.of(context).pop(); // Cerrar el diálogo primero
-              pickVideo(ImageSource.camera); // 🚨 CORRECCIÓN 3: No pasar context
-            },
-            child: const Row(
-              children: [
-                Icon(Icons.camera_alt),
-                Padding(
-                  padding: EdgeInsets.all(7.0),
-                  child: Text(
-                    'Camera',
-                    style: TextStyle(fontSize: 20),
+          if (!kIsWeb) // La cámara no está disponible en web
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.of(context).pop();
+                pickVideo(ImageSource.camera);
+              },
+              child: const Row(
+                children: [
+                  Icon(Icons.camera_alt),
+                  Padding(
+                    padding: EdgeInsets.all(7.0),
+                    child: Text(
+                      'Camera',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           SimpleDialogOption(
             onPressed: () => Navigator.of(context).pop(),
             child: const Row(

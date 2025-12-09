@@ -1,17 +1,16 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/controllers/upload_video_controller.dart';
 import 'package:tiktok_tutorial/views/widgets/text_input_field.dart';
 import 'package:video_player/video_player.dart';
+import 'package:tiktok_tutorial/utils/file_picker_helper.dart';
 
 class ConfirmScreen extends StatefulWidget {
-  final File videoFile;
-  final String videoPath;
+  final PickedFile videoFile;
   const ConfirmScreen({
     super.key,
     required this.videoFile,
-    required this.videoPath,
   });
 
   @override
@@ -30,7 +29,13 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
   void initState() {
     super.initState();
     setState(() {
-      controller = VideoPlayerController.file(widget.videoFile);
+      if (kIsWeb) {
+        // En web, usamos networkUrl con el blob URL
+        controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoFile.path));
+      } else {
+        // En móvil, esto necesitaría dart:io File
+        throw UnsupportedError('Mobile video playback not implemented in this version');
+      }
     });
     controller.initialize();
     controller.play();
@@ -94,7 +99,7 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                       onPressed: () => uploadVideoController.uploadVideo(
                           _songController.text,
                           _captionController.text,
-                          widget.videoPath),
+                          widget.videoFile),
                       child: const Text(
                         'Share!',
                         style: TextStyle(

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tiktok_tutorial/constants.dart';
+import 'package:tiktok_tutorial/views/screens/add_video_screen.dart';
+import 'package:tiktok_tutorial/views/screens/messages_screen.dart';
+import 'package:tiktok_tutorial/views/screens/profile_screen.dart';
+import 'package:tiktok_tutorial/views/screens/search_screen.dart';
+import 'package:tiktok_tutorial/views/screens/video_screen.dart';
 import 'package:tiktok_tutorial/views/widgets/custom_icon.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Construir páginas dinámicamente para obtener el UID correcto
+    final List<Widget> pages = [
+      VideoScreen(),
+      SearchScreen(),
+      const AddVideoScreen(),
+      const MessagesScreen(),
+      ProfileScreen(uid: authController.user.uid),
+    ];
+
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         onTap: (idx) {

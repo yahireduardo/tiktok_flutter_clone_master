@@ -1,19 +1,19 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/user.dart' as model;
 import 'package:tiktok_tutorial/views/screens/auth/login_screen.dart';
 import 'package:tiktok_tutorial/views/screens/home_screen.dart';
+import 'package:tiktok_tutorial/utils/file_picker_helper.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
   late Rx<User?> _user;
-  late Rx<File?> _pickedImage;
+  final _pickedImage = Rx<PickedFile?>(null);
 
-  File? get profilePhoto => _pickedImage.value;
+  PickedFile? get profilePhoto => _pickedImage.value;
   User get user => _user.value!;
 
   @override
@@ -33,23 +33,29 @@ class AuthController extends GetxController {
   }
 
   void pickImage() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage = await FilePickerHelper.pickImage();
     if (pickedImage != null) {
       Get.snackbar('Profile Picture',
           'You have successfully selected your profile picture!');
+      _pickedImage.value = pickedImage;
     }
-    _pickedImage = Rx<File?>(File(pickedImage!.path));
   }
 
   // upload to firebase storage
-  Future<String> _uploadToStorage(File image) async {
+  Future<String> _uploadToStorage(PickedFile image) async {
     Reference ref = firebaseStorage
         .ref()
         .child('profilePics')
         .child(firebaseAuth.currentUser!.uid);
 
-    UploadTask uploadTask = ref.putFile(image);
+    UploadTask uploadTask;
+    if (kIsWeb && image.bytes != null) {
+      uploadTask = ref.putData(image.bytes!);
+    } else {
+      // Para móvil, necesitamos dart:io File
+      throw UnsupportedError('Mobile upload not implemented in this version');
+    }
+    
     TaskSnapshot snap = await uploadTask;
     String downloadUrl = await snap.ref.getDownloadURL();
     return downloadUrl;
@@ -57,28 +63,40 @@ class AuthController extends GetxController {
 
   // registering the user
   void registerUser(
-      String username, String email, String password, File? image) async {
+      String username, String email, String password, PickedFile? image) async {
     try {
+      print('=== Starting user registration ===');
       if (username.isNotEmpty &&
           email.isNotEmpty &&
           password.isNotEmpty &&
           image != null) {
+        print('Creating user in Firebase Auth...');
         // save out user to our ath and firebase firestore
         UserCredential cred = await firebaseAuth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        print('User created in Auth with UID: ${cred.user!.uid}');
+        
+        print('Uploading profile photo...');
         String downloadUrl = await _uploadToStorage(image);
+        print('Profile photo uploaded: $downloadUrl');
+        
         model.User user = model.User(
           name: username,
           email: email,
           uid: cred.user!.uid,
           profilePhoto: downloadUrl,
         );
+        
+        print('Saving user to Firestore...');
         await firestore
             .collection('users')
             .doc(cred.user!.uid)
             .set(user.toJson());
+        print('User saved to Firestore successfully!');
+        
+        Get.snackbar('Success', 'Account created successfully!');
       } else {
         Get.snackbar(
           'Error Creating Account',
@@ -86,6 +104,7 @@ class AuthController extends GetxController {
         );
       }
     } catch (e) {
+      print('Error during registration: $e');
       Get.snackbar(
         'Error Creating Account',
         e.toString(),
@@ -96,8 +115,27 @@ class AuthController extends GetxController {
   void loginUser(String email, String password) async {
     try {
       if (email.isNotEmpty && password.isNotEmpty) {
-        await firebaseAuth.signInWithEmailAndPassword(
+        UserCredential cred = await firebaseAuth.signInWithEmailAndPassword(
             email: email, password: password);
+        
+        // Verificar si el usuario existe en Firestore
+        var userDoc = await firestore.collection('users').doc(cred.user!.uid).get();
+        
+        if (!userDoc.exists) {
+          print('User document not found in Firestore, creating one...');
+          // Crear documento básico si no existe
+          model.User user = model.User(
+            name: email.split('@')[0], // Usar parte del email como nombre temporal
+            email: email,
+            uid: cred.user!.uid,
+            profilePhoto: 'https://www.pngitem.com/pimgs/m/150-1503945_transparent-user-png-default-user-image-png-png.png',
+          );
+          await firestore
+              .collection('users')
+              .doc(cred.user!.uid)
+              .set(user.toJson());
+          print('User document created successfully');
+        }
       } else {
         Get.snackbar(
           'Error Logging in',
@@ -106,7 +144,7 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        'Error Loggin gin',
+        'Error Logging in',
         e.toString(),
       );
     }
