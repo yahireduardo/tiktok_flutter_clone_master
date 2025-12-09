@@ -16,10 +16,10 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
   Future<void> pickVideo(ImageSource src) async {
     final video = await FilePickerHelper.pickVideo(src);
     
-    if (!mounted) return; 
+    if (!mounted) return;
 
     if (video != null) {
-      Navigator.of(context).push( 
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ConfirmScreen(
             videoFile: video,
