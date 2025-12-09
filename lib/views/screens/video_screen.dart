@@ -156,13 +156,15 @@ class VideoScreen extends StatelessWidget {
                           ),
                           Container(
                             width: 70,
-                            margin: EdgeInsets.only(
-                              top: size.height / 3,
-                              bottom: 200,
+                            constraints: BoxConstraints(
+                              maxHeight: size.height * 0.6,
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: SingleChildScrollView(
+                              physics: const NeverScrollableScrollPhysics(),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                 buildProfile(
                                   data.profilePhoto,
                                 ),
@@ -265,7 +267,8 @@ class VideoScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -279,3 +282,4 @@ class VideoScreen extends StatelessWidget {
     );
   }
 }
+
